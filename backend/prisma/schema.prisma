@@ -15,25 +15,26 @@ datasource db {
 
 // Projects model
 model Projects {
-  proj_id     Int      @id @default(autoincrement())
-  proj_name   String
-  proj_img    String   @default("logo_placeholder.png")
-  github      String?
-  hosting     String?
-  description String
-  category    Category // Using predefined enum
+  proj_id       Int            @id @default(autoincrement())
+  proj_name     String
+  proj_img      String         @default("logo_placeholder.png")
+  github        String?
+  hosting       String?
+  description   String
+  category      Category // Using predefined enum
+  projectStacks ProjectStack[]
 
   @@map("projects")
 }
 
 // Stack model
 model Stack {
-  id         Int    @id @default(autoincrement())
-  name       String
-  logo       String @default("logo_placeholder.png")
-  href       String
-  hoverColor String @default("hover:bg-epic-black-light")
-  category   String @default("learning")
+  id            Int            @id @default(autoincrement())
+  name          String
+  logo          String         @default("logo_placeholder.png")
+  href          String?
+  category      String         @default("learning")
+  projectStacks ProjectStack[]
 
   @@map("stacks")
 }
@@ -46,9 +47,20 @@ model Post {
   image     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  category  Category // Using predefined enum
+  category  Category
 
   @@map("posts")
+}
+
+model ProjectStack {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  stackId   Int
+  project   Projects @relation(fields: [projectId], references: [proj_id], onDelete: Cascade)
+  stack     Stack    @relation(fields: [stackId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, stackId])
+  @@map("project_stacks")
 }
 
 // Enum for predefined categories
