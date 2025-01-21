@@ -40,6 +40,25 @@ const SelectGroup: React.FC<SelectGroupProp> = ({table_name, onChange}) => {
           </select>
     )
   }
+
+  const UsedStackMultipleSelectMenu = () => {
+    return(
+      <select
+        value={selectedOption}
+        onChange={(e) => {
+          setSelectedOption(e.target.value);
+          changeTextColor();
+          onChange(e.target.value)
+        }}
+      >
+        {/* Loop Through the Stack data and list it all here */}
+        {/* <option value="" disabled className="text-body dark:text-bodydark">
+            Status of the tech stack
+        </option>  */}
+      </select>
+    );
+  }
+
   const ProjectSelectMenu = () => {
     return(
       <select

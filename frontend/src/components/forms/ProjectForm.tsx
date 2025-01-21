@@ -161,6 +161,12 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
               </div>
               <div className="mb-4.5">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Stacks Used
+                </label>
+                <SelectGroup table_name="stack" onChange={handleCategoryChange}/>
+              </div>
+              <div className="mb-4.5">
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Category
                 </label>
                 <SelectGroup table_name="project" onChange={handleCategoryChange}/>

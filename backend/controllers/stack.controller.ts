@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../database/prismaClient";
+import { put } from "@vercel/blob";
 import { validationResult } from "express-validator";
 
 ///////////////////////        GET METHODS           /////////////////////////////////////////////
@@ -9,6 +10,7 @@ export const getStacks = async (req: Request, res: Response) => {
     console.log(stacks);
     res.json(stacks);
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       error: "An error occured when fetching stack data.",
       message: error,
@@ -40,12 +42,18 @@ export const createStack = async (req: Request, res: Response) => {
     console.log("Validation Errors:", result.array());
     return res.status(400).json({ errors: result.array() });
   }
-  const stack = req.body;
-  console.log(stack);
+  const { name, logo, href, category } = req.body;
+  console.log(name, logo, href, category);
   try {
-    console.log(stack);
-    const newStack = await prisma.stack.create({ data: stack });
-    res.status(200).send(newStack);
+    const newStack = await prisma.stack.create({
+      data: {
+        name,
+        logo,
+        href,
+        category,
+      },
+    });
+    res.status(201).json(newStack);
   } catch (error) {
     res.status(500).send({
       error: "An error occured when creating a new stack",

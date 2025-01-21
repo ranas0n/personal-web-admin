@@ -3,7 +3,6 @@ import {
     Table,
     TableHeader,
     TableBody,
-    TableFooter,
     TableHead,
     TableRow,
     TableCell,
@@ -37,7 +36,7 @@ export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Logo</TableHead>
-            <TableHead>Actons</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

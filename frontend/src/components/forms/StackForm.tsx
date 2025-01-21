@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "../Layouts/DefaultLayout";
 import SelectGroup from "./SelectGroup";
+import { put } from '@vercel/blob';
 import { fetchSingleRecord } from "@/services/dataOperations";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -55,7 +56,6 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
     name: "",
     logo: "",
     href: "",
-    hoverColor: "",
     category: "",
   });
 
@@ -65,6 +65,23 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
       category: value,
     });
   };
+
+
+  const handleLogoUpload = async (file: File) => {
+    try {
+      const res = await put(file.name, file, {
+        access: 'public',
+        token: import.meta.env.VITE_BLOB_READ_WRITE_TOKEN
+      });
+      setStackData((prevData) => ({
+        ...prevData, logo: res.url
+      }));
+    } catch (error) {
+      console.error("Error uploading logo : ", error)
+      console.log(error)
+      alert("Failed to upload logo, please try again")
+    }
+  }
 
   useEffect(() => {
     if (isUpdate && id) {
@@ -121,21 +138,6 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
 
             <div className="mb-4.5">
               <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                HoverColor
-              </label>
-              <input
-                type="text"
-                placeholder="The color of the element when you hover over it"
-                value={stackData.hoverColor}
-                onChange={(e) =>
-                  setStackData({ ...stackData, hoverColor: e.target.value })
-                }
-                className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              />
-            </div>
-
-            <div className="mb-4.5">
-              <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Category
               </label>
               <SelectGroup table_name="stack" onChange={handleCategoryChange}/>
@@ -147,9 +149,17 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
               </label>
               <input
                 type="file"
+                id="image"
+                name="image"
                 className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleLogoUpload(file);
+                  }
+                }}
               />
-              {!stackData.logo ? <img src={stackData.logo}/> : ''}
+              {stackData.logo && <img src={stackData.logo} alt="Logo Preview" />}
             </div>
 
             <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">

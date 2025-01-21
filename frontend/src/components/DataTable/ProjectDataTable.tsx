@@ -3,7 +3,6 @@ import {
     Table,
     TableHeader,
     TableBody,
-    TableFooter,
     TableHead,
     TableRow,
     TableCell,
@@ -21,27 +20,27 @@ interface ProjectDataTableProps {
 
   export const ProjectDataTable: React.FC<ProjectDataTableProps> = ({ table_name, data }) => {
     const [Loading, setLoading] = useState(false);
-    const handleDeleteProject = async (id : number | undefined) => {
-      if (!id) return;
+    // const handleDeleteProject = async (id : number | undefined) => {
+    //   if (!id) return;
     
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/project/delete/${id}`,{
-          method:'DELETE'
-        })
-        if(response.ok) {
-          console.log('DELETED SUCCESFULLY')
-        }
-        else {
-          console.log('Failed to Delete the Record')
-        }
-      } catch (error) {
-        console.error(error)
-      }
-      finally{
-        setLoading(false)
-      }
-    }
+    //   try {
+    //     setLoading(true);
+    //     const response = await fetch(`http://localhost:5000/api/project/delete/${id}`,{
+    //       method:'DELETE'
+    //     })
+    //     if(response.ok) {
+    //       console.log('DELETED SUCCESFULLY')
+    //     }
+    //     else {
+    //       console.log('Failed to Delete the Record')
+    //     }
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    //   finally{
+    //     setLoading(false)
+    //   }
+    // }
   return (
     <>
       <div>
@@ -60,9 +59,10 @@ interface ProjectDataTableProps {
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Category</TableHead>
+            {/* <TableHead>Stacks Used</TableHead> */}
             <TableHead>Hosting URL</TableHead>
             <TableHead>Github Repo</TableHead>
-            <TableHead>Actons</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
