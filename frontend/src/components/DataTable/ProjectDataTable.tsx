@@ -19,7 +19,6 @@ interface ProjectDataTableProps {
 }
 
   export const ProjectDataTable: React.FC<ProjectDataTableProps> = ({ table_name, data }) => {
-    const [Loading, setLoading] = useState(false);
     // const handleDeleteProject = async (id : number | undefined) => {
     //   if (!id) return;
     

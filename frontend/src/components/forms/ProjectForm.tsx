@@ -2,22 +2,41 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../Layouts/DefaultLayout";
 import SelectGroup from "./SelectGroup";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchSingleRecord } from "@/services/dataOperations";
+import { fetchAllData, fetchSingleRecord } from "@/services/dataOperations";
+import { put } from "@vercel/blob";
+import MultipleSelectGroup from "./MultipleSelectGroup";
+import { Stack } from "@/interfaces/Stack";
 
 interface ProjectFormProp {
   method : string;
 }
 
 export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
+  const [stackData, setStackData] = useState<Stack[]>([]);
   const { proj_id } = useParams<{ proj_id: string }>();
+
   const isUpdate = method === "update";
   
+  useEffect(() => {
+    const loadProjects = async () => {
+        try{
+            const data = await fetchAllData('stacks');
+            console.log(data)
+            setStackData(data);
+            console.log(data);
+        }
+        catch (error){
+            console.error(error)
+        }
+    };
+
+    loadProjects();
+  }, [])
+
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/project/${proj_id}`
@@ -49,10 +68,23 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred while processing the request.");
-    } finally {
-      setIsLoading(false);
     }
+  }
 
+  const handleLogoUpload = async (file: File) => {
+    try {
+      const res = await put(file.name, file, {
+        access: 'public',
+        token: import.meta.env.VITE_BLOB_READ_WRITE_TOKEN
+      });
+      setProjectData((prevData) => ({
+        ...prevData, logo: res.url
+      }));
+    } catch (error) {
+      console.error("Error uploading project image : ", error)
+      console.log(error)
+      alert("Failed to upload project image, please try again")
+    }
   }
 
   const [ProjectData, setProjectData] = useState({
@@ -163,7 +195,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Stacks Used
                 </label>
-                <SelectGroup table_name="stack" onChange={handleCategoryChange}/>
+                <MultipleSelectGroup id="multiselect" data={stackData}/>
               </div>
               <div className="mb-4.5">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">

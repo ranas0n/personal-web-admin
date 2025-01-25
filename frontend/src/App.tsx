@@ -1,11 +1,19 @@
 // import { useState } from 'react'
+import { useEffect, useState } from 'react';
 import CardDataStats from './components/CardDataStats'
 import DefaultLayout from './components/Layouts/DefaultLayout';
+import Loader from './components/common/Loader';
 
 function App() {
   // const [count, setCount] = useState(0)
+  const [loading, setLoading] = useState<boolean>(true);
 
-  return (
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
+
+  return (loading ? <Loader /> : 
     <>
     <DefaultLayout>
 

@@ -6,7 +6,6 @@ import { Project } from "@/interfaces/Project";
 
 export const Projects : React.FC= () => {
     const [ProjectData, setProjectData] = useState<Project[]>([]);
-    const [Loading, setLoading] = useState<boolean>(true);
     const [Error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -14,11 +13,9 @@ export const Projects : React.FC= () => {
             try {
                 const data = await fetchAllData('projects');
                 setProjectData(data);
-                setLoading(false);
                 console.log(ProjectData)
             } catch (error) {
                 setError((error as Error).message);
-                setLoading(false);
             }
         }
 

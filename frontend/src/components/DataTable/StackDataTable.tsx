@@ -19,7 +19,6 @@ interface StackDataTableProps {
 }
 
 export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data }) => {
-  const [Loading, setLoading] = useState<boolean>(false);
 
   return (
     <>

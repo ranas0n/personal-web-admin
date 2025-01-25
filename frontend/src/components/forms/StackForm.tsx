@@ -14,12 +14,9 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
   const isUpdate = method === "update";
   
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/stack/${id}`
     : "http://localhost:3000/api/stack/";
@@ -46,8 +43,6 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred while processing the request.");
-    } finally {
-      setIsLoading(false);
     }
 
   }
