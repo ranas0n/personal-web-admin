@@ -40,14 +40,30 @@ export const createProject = async (req: Request, res: Response) => {
     console.log("Validation Errors:", result.array());
     return res.status(400).json({ errors: result.array() });
   }
-  const project = req.body;
-  console.log(project);
+  const project = req.body.project;
+  const stacks = req.body.stacks;
+  console.log(project, stacks);
+
   try {
-    const newProject = await prisma.projects.create({ data: project });
-    res.status(200).send(newProject);
+    const newProject = await prisma.$transaction(async (prisma) => {
+      const projectData = await prisma.projects.create({ data: project });
+
+      const projectStack = stacks.map((stack: { id: number }) => ({
+        projectId: projectData.proj_id,
+        stackId: +stack.id,
+      }));
+
+      const newProjectStack = await prisma.projectStack.createMany({
+        data: projectStack,
+      });
+
+      return projectData;
+    });
+    res.status(200).send({ newProject });
   } catch (error) {
-    res.status(500).send({
-      error: "An error occured when creating a new project",
+    console.log(error);
+    res.status(500).json({
+      error: "An error occured when creating projects and its stacks",
       message: error,
     });
   }
@@ -72,7 +88,7 @@ export const updateProject = async (req: Request, res: Response) => {
     res.status(200).send(newProject);
   } catch (error) {
     res.status(500).send({
-      error: "An error occured when updating the project",
+      error: "An error occurred while updating the project and its stacks",
       message: error,
     });
   }

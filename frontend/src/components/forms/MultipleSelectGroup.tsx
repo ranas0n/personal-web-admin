@@ -1,4 +1,3 @@
-import { fetchAllData } from '@/services/dataOperations';
 import React, { useState, useEffect, useRef } from 'react';
 import { Stack } from '@/interfaces/Stack';
 
@@ -9,12 +8,18 @@ interface Option {
   element?: HTMLElement;
 }
 
+interface selectedType {
+  id: string;
+  name: string;
+}
+
 interface DropdownProps {
   id: string;
   data: Stack[];
+  onSelectionChange?: (selected: selectedType[]) => void;
 }
 
-const MultipleSelectGroup: React.FC<DropdownProps> = ({ id, data }) => {
+const MultipleSelectGroup: React.FC<DropdownProps> = ({ id, data, onSelectionChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [show, setShow] = useState(false);
@@ -78,30 +83,42 @@ const MultipleSelectGroup: React.FC<DropdownProps> = ({ id, data }) => {
     }
   };
 
-  const selectedValues = () => {
+  const getSelectedValues = (): selectedType[] => {
+    return selected.map((option) => ({
+      id: options[option].value,
+      name: options[option].text
+    }));
+  };
+
+  const selectedValue = () => {
     return selected.map((option) => options[option].value);
   };
 
-    useEffect(() => {
-      const clickHandler = ({ target }: MouseEvent) => {
-        if (!dropdownRef.current) return;
-        if (
-          !show ||
-          dropdownRef.current.contains(target) ||
-          trigger.current.contains(target)
-        )
-          return;
-        setShow(false);
-      };
-      document.addEventListener('click', clickHandler);
-      return () => document.removeEventListener('click', clickHandler);
-    });
+  useEffect(() => {
+    if (onSelectionChange){
+      onSelectionChange(getSelectedValues())
+    }
+  }, [selected])
+
+
+  useEffect(() => {
+    const clickHandler = ({ target }: MouseEvent) => {
+      if (!dropdownRef.current) return;
+      console.log('show', show)
+      if (
+        dropdownRef.current.contains(target) ||
+        trigger.current.contains(target)
+      )
+      return;
+      console.log('show', show)
+      setShow(false);
+    };
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
+  });
 
   return (
     <div className="relative z-50">
-      <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        Multiselect Dropdown
-      </label>
       <div>
         <select className="hidden" id={id}>
             {data.map((stack, index) => {
@@ -109,11 +126,10 @@ const MultipleSelectGroup: React.FC<DropdownProps> = ({ id, data }) => {
                     <option key={index} value={stack.id}>{stack.name}</option>
                 )
             })}
-          <option value="1">Option 2</option>
         </select>
 
         <div className="flex flex-col items-center">
-          <input name="values" type="hidden" defaultValue={selectedValues()} />
+          <input name="values" type="hidden" defaultValue={selectedValue()} />
           <div className="relative z-20 inline-block w-full">
             <div className="relative flex flex-col items-center">
               <div ref={trigger} onClick={open} className="w-full">
@@ -157,7 +173,7 @@ const MultipleSelectGroup: React.FC<DropdownProps> = ({ id, data }) => {
                         <input
                           placeholder="Select an option"
                           className="h-full w-full appearance-none bg-transparent p-1 px-2 outline-none"
-                          defaultValue={selectedValues()}
+                          defaultValue={selectedValue()}
                         />
                       </div>
                     )}

@@ -6,27 +6,49 @@ import { fetchAllData, fetchSingleRecord } from "@/services/dataOperations";
 import { put } from "@vercel/blob";
 import MultipleSelectGroup from "./MultipleSelectGroup";
 import { Stack } from "@/interfaces/Stack";
+import Loader from "../common/Loader";
 
 interface ProjectFormProp {
   method : string;
 }
 
+interface selectedType {
+  id: string;
+  name: string;
+}
+
 export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   const [stackData, setStackData] = useState<Stack[]>([]);
+  const [selectedStacks, setSelectedStacks] =  useState<selectedType[]>([]);
   const { proj_id } = useParams<{ proj_id: string }>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   const isUpdate = method === "update";
+
+  // useEffect(() => {
+  //   const payload = Object.fromEntries(
+  //     Object.entries(ProjectData).filter(([key, value]) => value)
+  //   );
+  //   console.log(JSON.stringify({
+  //     project: payload,
+  //     stacks: selectedStacks
+  //   }))
+  // }, [selectedStacks])
   
   useEffect(() => {
     const loadProjects = async () => {
+      console.log('this func has been run')
         try{
             const data = await fetchAllData('stacks');
-            console.log(data)
+            // console.log(data)
             setStackData(data);
-            console.log(data);
+            // console.log(data);
         }
         catch (error){
             console.error(error)
+        }
+        finally{
+          setLoading(false);
         }
     };
 
@@ -41,10 +63,15 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/project/${proj_id}`
     : "http://localhost:3000/api/project/";
-    const payload = Object.fromEntries(
-      Object.entries(ProjectData).filter(([key, value]) => value)
-    );
-    console.log('Project Payload:', JSON.stringify(payload));
+    // const payload = Object.fromEntries(
+    //   Object.entries(ProjectData).filter(([key, value]) => value)
+    // );
+
+    const payload = {
+      project: ProjectData,
+      stacks: selectedStacks
+    }
+    console.log('Project & Stacks Payload:', JSON.stringify(payload));
     try {
       const response = await fetch(apiUrl, {
         method: isUpdate ? 'PATCH' : 'POST',
@@ -69,6 +96,10 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
       console.error("Error:", error);
       alert("An error occurred while processing the request.");
     }
+  }
+
+  const handleSelectionChange = (selected: selectedType[]) => {
+    setSelectedStacks(selected);
   }
 
   const handleLogoUpload = async (file: File) => {
@@ -130,7 +161,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the stack name"
+                  placeholder="The name of the project"
                   value={ProjectData.proj_name}
                   onChange={(e) => {
                     setProjectData({
@@ -147,7 +178,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="The color of the element when you hover over it"
+                  placeholder="The Description of the project"
                   value={ProjectData.description}
                   onChange={(e) => {
                     setProjectData({
@@ -163,7 +194,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Where would you want the element to redirect?"
+                  placeholder="The Github Repository where the code is published."
                   value={ProjectData.github}
                   onChange={(e) => {
                     setProjectData({
@@ -195,7 +226,13 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Stacks Used
                 </label>
-                <MultipleSelectGroup id="multiselect" data={stackData}/>
+                {
+                  loading?
+                    <Loader /> : 
+                <MultipleSelectGroup id="multiselect" data={stackData} 
+                onSelectionChange={handleSelectionChange}
+                />
+                }
               </div>
               <div className="mb-4.5">
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
