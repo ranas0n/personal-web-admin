@@ -37,7 +37,6 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   
   useEffect(() => {
     const loadProjects = async () => {
-      console.log('this func has been run')
         try{
             const data = await fetchAllData('stacks');
             // console.log(data)
@@ -63,9 +62,6 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/project/${proj_id}`
     : "http://localhost:3000/api/project/";
-    // const payload = Object.fromEntries(
-    //   Object.entries(ProjectData).filter(([key, value]) => value)
-    // );
 
     const payload = {
       project: ProjectData,

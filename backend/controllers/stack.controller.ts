@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import prisma from "../database/prismaClient";
-import { put } from "@vercel/blob";
 import { validationResult } from "express-validator";
 
 ///////////////////////        GET METHODS           /////////////////////////////////////////////
 export const getStacks = async (req: Request, res: Response) => {
   try {
     const stacks = await prisma.stack.findMany();
-    console.log(stacks);
     res.json(stacks);
   } catch (error) {
     console.log(error);

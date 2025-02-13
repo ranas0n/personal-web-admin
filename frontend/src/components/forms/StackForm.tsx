@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "../Layouts/DefaultLayout";
 import SelectGroup from "./SelectGroup";
 import { put } from '@vercel/blob';
-import { fetchSingleRecord } from "@/services/dataOperations";
+import { deleteBlobImage, fetchSingleRecord } from "@/services/dataOperations";
 import { useNavigate, useParams } from "react-router-dom";
+import { BsTrash } from "react-icons/bs";
 
 interface StackFormProp {
   method: string;
@@ -20,16 +21,13 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/stack/${id}`
     : "http://localhost:3000/api/stack/";
-    const payload = Object.fromEntries(
-      Object.entries(stackData).filter(([key, value]) => value)
-    );
     try {
       const response = await fetch(apiUrl, {
         method: isUpdate ? 'PATCH' : 'POST',
         headers : {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(stackData),
       });
 
       const result = await response.json();
@@ -142,6 +140,16 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
               <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Logo
               </label>
+
+              {stackData.logo &&
+                <div className="flex flex-row p-5 m-3 items-end">
+                <img src={stackData.logo} className="w-30 mx-4" alt="Logo Preview" />
+                
+                <a onClick={async () => deleteBlobImage(stackData.logo, "stacks", id)} className="flex w-10 h-10 justify-center cursor-pointer items-center rounded-full bg-orange-600 p-3 font-medium text-white hover:opacity-50">
+                  <BsTrash />
+                </a>
+              </div>
+              }
               <input
                 type="file"
                 id="image"
@@ -154,7 +162,6 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
                   }
                 }}
               />
-              {stackData.logo && <img src={stackData.logo} alt="Logo Preview" />}
             </div>
 
             <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">

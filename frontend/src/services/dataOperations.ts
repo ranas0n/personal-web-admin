@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const API_URL = `http://localhost:3000/api`;
 
@@ -70,5 +70,33 @@ export const handleDelete = async (
     }
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const deleteBlobImage = async (
+  blobURL: string,
+  table: string,
+  recordId: string | undefined
+) => {
+  if (!blobURL || !table || !recordId) return;
+
+  const encodedURL = encodeURIComponent(blobURL);
+
+  const url = `${API_URL}/blob/${encodedURL}-${table}-${recordId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+    });
+
+    console.log(response);
+
+    if (response.ok) {
+      console.log("IMAGE DELETED SUCCESFULLY.");
+    } else {
+      console.log("Failed to delete image");
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
