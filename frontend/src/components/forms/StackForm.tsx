@@ -5,6 +5,7 @@ import { put } from '@vercel/blob';
 import { deleteBlobImage, fetchSingleRecord } from "@/services/dataOperations";
 import { useNavigate, useParams } from "react-router-dom";
 import { BsTrash } from "react-icons/bs";
+import { Stack } from "@/interfaces/Stack";
 
 interface StackFormProp {
   method: string;
@@ -13,14 +14,15 @@ interface StackFormProp {
 export const StackForm: React.FC<StackFormProp> = ({ method }) => {
   const { id } = useParams<{ id: string }>();
   const [logo, setLogo] = useState<File | null>(null);
+  const [image, setImage] = useState<string | undefined>('');
   
-  const [stackData, setStackData] = useState({
+  const [stackData, setStackData] = useState<Stack>({
     name: "",
     logo: "",
     href: "",
     category: "",
   });
-  
+
   const isUpdate = method === "update";
   
   const navigate = useNavigate();
@@ -86,9 +88,10 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
 
   useEffect(() => {
     if (isUpdate && id) {
-      fetchSingleRecord(Number(id), "stack").then((data) => {
+      fetchSingleRecord(Number(id), "stack").then((data: Stack) => {
         if (data) {
           setStackData(data);
+          setImage(data.logo);
           console.log(data)
         }
       });
@@ -149,13 +152,13 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
                 Logo
               </label>
 
-              {stackData.logo &&
+              {image &&
                 <div className="flex flex-row p-5 m-3 items-end">
-                <img src={stackData.logo} className="w-30 mx-4" alt="Logo Preview" />
+                <img src={image} className="w-30 mx-4" alt="Logo Preview" />
                 
-                <a onClick={async () => deleteBlobImage(stackData.logo, "stacks", id)} className="flex w-10 h-10 justify-center cursor-pointer items-center rounded-full bg-orange-600 p-3 font-medium text-white hover:opacity-50">
+                {/* <a onClick={async () => deleteBlobImage(stackData.logo, "stacks", id)} className="flex w-10 h-10 justify-center cursor-pointer items-center rounded-full bg-orange-600 p-3 font-medium text-white hover:opacity-50">
                   <BsTrash />
-                </a>
+                </a> */}
               </div>
               }
               <input

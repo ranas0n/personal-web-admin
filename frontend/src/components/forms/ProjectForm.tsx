@@ -6,6 +6,7 @@ import { fetchAllData, fetchSingleRecord } from "@/services/dataOperations";
 import { put } from "@vercel/blob";
 import MultipleSelectGroup from "./MultipleSelectGroup";
 import { Stack } from "@/interfaces/Stack";
+import { Project } from "@/interfaces/Project";
 import Loader from "../common/Loader";
 
 interface ProjectFormProp {
@@ -23,26 +24,16 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   const { proj_id } = useParams<{ proj_id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [logo, setLogo] = useState<File | null>(null)
+  const [image, setImage] = useState<string | undefined>('');
+  
 
   const isUpdate = method === "update";
-
-  // useEffect(() => {
-  //   const payload = Object.fromEntries(
-  //     Object.entries(ProjectData).filter(([key, value]) => value)
-  //   );
-  //   console.log(JSON.stringify({
-  //     project: payload,
-  //     stacks: selectedStacks
-  //   }))
-  // }, [selectedStacks])
   
   useEffect(() => {
     const loadProjects = async () => {
         try{
             const data = await fetchAllData('stacks');
-            // console.log(data)
             setStackData(data);
-            // console.log(data);
         }
         catch (error){
             console.error(error)
@@ -122,7 +113,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
     }
   }
 
-  const [ProjectData, setProjectData] = useState({
+  const [ProjectData, setProjectData] = useState<Project>({
     proj_name: "",
     proj_img: "",
     category: "",
@@ -141,9 +132,10 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
 
   useEffect(() => {
     if (isUpdate && proj_id) {
-      fetchSingleRecord(Number(proj_id), "project").then((data) => {
+      fetchSingleRecord(Number(proj_id), "project").then((data: Project) => {
         if (data) {
           setProjectData(data);
+          setImage(data.proj_img);
           console.log(data)
         }
       });
@@ -248,6 +240,9 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Logo
                 </label>
+                {
+                  image && <img src={image} className="w-30 mx-4" alt="Logo Preview"/>
+                }
                 <input
                 type="file"
                 className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
