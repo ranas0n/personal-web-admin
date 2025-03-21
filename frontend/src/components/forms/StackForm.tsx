@@ -12,22 +12,38 @@ interface StackFormProp {
 
 export const StackForm: React.FC<StackFormProp> = ({ method }) => {
   const { id } = useParams<{ id: string }>();
+  const [logo, setLogo] = useState<File | null>(null);
+  
+  const [stackData, setStackData] = useState({
+    name: "",
+    logo: "",
+    href: "",
+    category: "",
+  });
+  
   const isUpdate = method === "update";
   
   const navigate = useNavigate();
 
   const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
+
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/stack/${id}`
     : "http://localhost:3000/api/stack/";
     try {
+      let updatedStackData = {...stackData};
+      if (logo) {
+        const res = await handleLogoUpload(logo);
+        console.log('Logo uploaded successfully', res);
+        if (res) updatedStackData.logo = res.url;
+      }
       const response = await fetch(apiUrl, {
         method: isUpdate ? 'PATCH' : 'POST',
         headers : {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(stackData),
+        body: JSON.stringify(updatedStackData),
       });
 
       const result = await response.json();
@@ -45,13 +61,6 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
 
   }
 
-  const [stackData, setStackData] = useState({
-    name: "",
-    logo: "",
-    href: "",
-    category: "",
-  });
-
   const handleCategoryChange = (value: string) => {
     setStackData({
       ...stackData,
@@ -66,9 +75,8 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
         access: 'public',
         token: import.meta.env.VITE_BLOB_READ_WRITE_TOKEN
       });
-      setStackData((prevData) => ({
-        ...prevData, logo: res.url
-      }));
+
+      return res;
     } catch (error) {
       console.error("Error uploading logo : ", error)
       console.log(error)
@@ -158,7 +166,7 @@ export const StackForm: React.FC<StackFormProp> = ({ method }) => {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    handleLogoUpload(file);
+                    setLogo(file);
                   }
                 }}
               />

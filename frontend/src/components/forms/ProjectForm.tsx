@@ -22,6 +22,7 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   const [selectedStacks, setSelectedStacks] =  useState<selectedType[]>([]);
   const { proj_id } = useParams<{ proj_id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [logo, setLogo] = useState<File | null>(null)
 
   const isUpdate = method === "update";
 
@@ -59,16 +60,24 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
 
+    
     const apiUrl = isUpdate
     ? `http://localhost:3000/api/project/${proj_id}`
     : "http://localhost:3000/api/project/";
-
-    const payload = {
+    
+    let payload = {
       project: ProjectData,
       stacks: selectedStacks
     }
     console.log('Project & Stacks Payload:', JSON.stringify(payload));
     try {
+
+      if (logo) {
+        const res = await handleImageUpload(logo);
+        
+        if(res) payload.project.proj_img = res?.url;
+      }
+
       const response = await fetch(apiUrl, {
         method: isUpdate ? 'PATCH' : 'POST',
         headers : {
@@ -98,15 +107,14 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
     setSelectedStacks(selected);
   }
 
-  const handleLogoUpload = async (file: File) => {
+  const handleImageUpload = async (file: File) => {
     try {
       const res = await put(file.name, file, {
         access: 'public',
         token: import.meta.env.VITE_BLOB_READ_WRITE_TOKEN
       });
-      setProjectData((prevData) => ({
-        ...prevData, logo: res.url
-      }));
+      
+      return res;
     } catch (error) {
       console.error("Error uploading project image : ", error)
       console.log(error)
@@ -243,19 +251,15 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
                 <input
                 type="file"
                 className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setLogo(file);
+                  }
+                }
+                }
               />
               </div>
-
-              {/* <div className="mb-6">
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Message
-                </label>
-                <textarea
-                  rows={6}
-                  placeholder="Type your message"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                ></textarea>
-              </div> */}
 
             <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
               {isUpdate ? 'Update':'Add'}
