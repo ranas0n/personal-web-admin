@@ -3,24 +3,21 @@
 const API_URL = `http://localhost:3000/api`;
 
 export const getRowCount = async (table: string) => {
+  const url = `${API_URL}/row-count/${table}`;
   try {
-    const url = `${API_URL}/row-count/${table}`;
+    console.log("Fetching from url : ", url);
+    const res = await fetch(url);
 
-    try {
-      console.log("Fetching from url : ", url);
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`Failed at fetching from ${url}. Status ${res.status}`);
-      }
-
-      const rowNum = await res.json();
-      return rowNum;
-    } catch (error) {
-      console.error(`Error fetching from ${url}`, error);
-      return 0;
+    if (!res.ok) {
+      throw new Error(`Failed at fetching from ${url}. Status ${res.status}`);
     }
-  } catch (e) {}
+
+    const rowNum = await res.json();
+    return rowNum;
+  } catch (error) {
+    console.error(`Error fetching from ${url}`, error);
+    return 0;
+  }
 };
 
 export const fetchAllData = async (url_path: string) => {
