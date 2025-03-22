@@ -2,6 +2,27 @@
 
 const API_URL = `http://localhost:3000/api`;
 
+export const getRowCount = async (table: string) => {
+  try {
+    const url = `${API_URL}/row-count/${table}`;
+
+    try {
+      console.log("Fetching from url : ", url);
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        throw new Error(`Failed at fetching from ${url}. Status ${res.status}`);
+      }
+
+      const rowNum = await res.json();
+      return rowNum;
+    } catch (error) {
+      console.error(`Error fetching from ${url}`, error);
+      return 0;
+    }
+  } catch (e) {}
+};
+
 export const fetchAllData = async (url_path: string) => {
   try {
     const url = `${API_URL}/${url_path}`;
