@@ -21,7 +21,7 @@ interface StackDataTableProps {
 export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data }) => {
 
   return (
-    <>
+    <div className="max-w-full">
       <Button className="mb-2">
         <Link to={`/stack/`}>
           Add {table_name}
@@ -63,7 +63,7 @@ export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
   );
 };
 

@@ -8,7 +8,7 @@ const config: Config = {
     "./src/components/*.{js,ts,jsx,tsx,mdx, html}",
     "./index.html",
   ],
-  darkMode: ["class", "class"],
+  darkMode: "class",
   theme: {
     fontFamily: {
       sans: [

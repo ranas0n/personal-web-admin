@@ -9,7 +9,7 @@ export default function DefaultLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <>
+    <div className="bg-boxdark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex">
         {/* <!-- ===== Sidebar Start ===== --> */}
@@ -24,7 +24,7 @@ export default function DefaultLayout({
 
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 dark:bg-boxdark-2 rounded-3xl m-4">
               {children}
             </div>
           </main>
@@ -33,6 +33,6 @@ export default function DefaultLayout({
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
-    </>
+    </div>
   );
 }

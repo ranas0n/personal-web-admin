@@ -22,10 +22,10 @@ export const Projects : React.FC= () => {
         loadProjects();
     }, [])
     return(
-        <>
-        <DefaultLayout>
-            <ProjectDataTable data={ProjectData} table_name="projects"/>
-        </DefaultLayout>
-        </>
+        <div>
+            <DefaultLayout>
+                <ProjectDataTable data={ProjectData} table_name="projects"/>
+            </DefaultLayout>
+        </div>
     )
 }

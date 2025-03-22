@@ -8,7 +8,6 @@ import { getRowCount } from './services/dataOperations';
 import { AiFillProject } from 'react-icons/ai';
 
 function App() {
-  // const [count, setCount] = useState(0)
   const [loading, setLoading] = useState<boolean>(true);
   const [stackRowNum, setStackRowNum] = useState<number>(0);
   const [projectRowNum, setProjectRowNum] = useState<number>(0);

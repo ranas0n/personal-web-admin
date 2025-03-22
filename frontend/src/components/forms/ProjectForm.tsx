@@ -256,7 +256,8 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
               />
               </div>
 
-            <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+            <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray 
+             dark:bg-indigo-600 hover:bg-opacity-90">
               {isUpdate ? 'Update':'Add'}
             </button>
             </div>

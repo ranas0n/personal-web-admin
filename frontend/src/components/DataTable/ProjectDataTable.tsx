@@ -41,7 +41,7 @@ interface ProjectDataTableProps {
     //   }
     // }
   return (
-    <>
+    <div className="max-w-full">
       <div>
         <Button className="mb-2">
           <Link to={`/project/`}>
@@ -86,7 +86,7 @@ interface ProjectDataTableProps {
                   {item.github}
                 </a>
               </TableCell>
-              <TableCell>
+              <TableCell className="min-w-fit">
                 <Button className="m-1">
                   <Link to={`/project/${item.proj_id}`}>Update</Link>
                 </Button>
@@ -102,7 +102,7 @@ interface ProjectDataTableProps {
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
   );
 };
 
