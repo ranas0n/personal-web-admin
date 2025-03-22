@@ -88,3 +88,10 @@ Before diving in, make sure you've got these installed:
    cd frontend
    npm start
    ```
+
+## TODO
+
+- Fetch => React Query for caching
+- Use dynamic table
+- Add delete image on update page (add placeholder as well)
+- Get the project-stack i/o running
