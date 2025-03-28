@@ -1,77 +1,118 @@
 import React, { useState } from "react";
-import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableCaption,
-  } from "../ui/table";
-import { Stack } from "@/interfaces/Stack";
+import { useReactTable, createColumnHelper, getCoreRowModel, flexRender, getPaginationRowModel } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import { Stack } from "@/interfaces/Stack";
 import { handleDelete } from "@/services/dataOperations";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+// Define props for the table component
 interface StackDataTableProps {
-  table_name : string;
+  table_name: string;
   data: Stack[];
 }
 
+const columnHelper = createColumnHelper<Stack>();
 
 export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data }) => {
-  
   const queryClient = useQueryClient();
+  const [pageSize, setPageSize] = useState(8);
+
   const deleteMutation = useMutation<void, Error, number | undefined>({
     mutationFn: (id) => handleDelete(id, "stack"),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["stacks"] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["stacks"] }),
+  });
+
+  const columns = [
+    columnHelper.accessor("id", {
+      header: "ID",
+      cell: (info) => <span className="font-medium">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("category", {
+      header: "Category",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("logo", {
+      header: "Logo",
+      cell: (info) => (
+        <img src={info.getValue()} alt="Logo" width="50" />
+      ),
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <Button>
+            <Link to={`/stack/${row.original.id}`}>Update</Link>
+          </Button>
+          <Button
+            onClick={() => deleteMutation.mutate(row.original.id)}
+          >
+            Delete
+          </Button>
+        </div>
+      ),
+    }),
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: pageSize } },
   });
 
   return (
     <div className="max-w-full">
       <Button className="mb-2">
-        <Link to={`/stack/`}>
-          Add {table_name}
-        </Link>
+        <Link to={`/stack/`}>Add {table_name}</Link>
       </Button>
-      <Table>
-        <TableCaption>A list of your {table_name} data.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Logo</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">{item.id}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.category}</TableCell>
-              <TableCell>
-                <img src={item.logo} alt={item.name} width="50" />
-              </TableCell>
-              <TableCell>
-                <Button className="m-1">
-                  <Link to={`/stack/${item.id}`}>Update</Link>
-                </Button>
-                <Button className="m-1" onClick={() => {
-                  deleteMutation.mutate(item.id);
-                  console.log('Delete Button Clicked!');
-                }}>
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
+      
+      <table className="w-full border-collapse border border-gray-300">
+        <caption className="text-lg font-semibold my-2">A list of your {table_name} data.</caption>
+        
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className="border border-gray-300 p-2">
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </thead>
+
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="border border-gray-300">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="border border-gray-300 p-2">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex items-center justify-between mt-4">
+        <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          Previous
+        </Button>
+        <span>
+          Page <strong>{table.getState().pagination.pageIndex + 1}</strong> of {table.getPageCount()}
+        </span>
+        <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
-
-
