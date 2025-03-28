@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Table,
     TableHeader,
@@ -12,34 +12,21 @@ import { Project } from "@/interfaces/Project";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { handleDelete } from "@/services/dataOperations";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ProjectDataTableProps {
   table_name : string;
   data: Project[];
 }
 
-  export const ProjectDataTable: React.FC<ProjectDataTableProps> = ({ table_name, data }) => {
-    // const handleDeleteProject = async (id : number | undefined) => {
-    //   if (!id) return;
-    
-    //   try {
-    //     setLoading(true);
-    //     const response = await fetch(`http://localhost:5000/api/project/delete/${id}`,{
-    //       method:'DELETE'
-    //     })
-    //     if(response.ok) {
-    //       console.log('DELETED SUCCESFULLY')
-    //     }
-    //     else {
-    //       console.log('Failed to Delete the Record')
-    //     }
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    //   finally{
-    //     setLoading(false)
-    //   }
-    // }
+
+export const ProjectDataTable: React.FC<ProjectDataTableProps> = ({ table_name, data }) => {
+  const queryClient = useQueryClient();
+  
+  const deleteMutation = useMutation<void, Error, number | undefined>({
+    mutationFn: (id) => handleDelete(id, "stack"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["projects"] })
+  });
   return (
     <div className="max-w-full">
       <div>
@@ -91,9 +78,9 @@ interface ProjectDataTableProps {
                   <Link to={`/project/${item.proj_id}`}>Update</Link>
                 </Button>
                 <Button className="m-1" onClick={() => {
-                  handleDelete(item.proj_id, 'project');
+                  deleteMutation.mutate(item.proj_id);
                   console.log('Delete Button Clicked!');
-                  window.location.reload();
+                  // window.location.reload();
                 }}>
                   Delete
                 </Button>

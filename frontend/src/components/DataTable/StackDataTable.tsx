@@ -10,15 +10,23 @@ import {
   } from "../ui/table";
 import { Stack } from "@/interfaces/Stack";
 import { Button } from "../ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { handleDelete } from "@/services/dataOperations";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface StackDataTableProps {
   table_name : string;
   data: Stack[];
 }
 
+
 export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data }) => {
+  
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation<void, Error, number | undefined>({
+    mutationFn: (id) => handleDelete(id, "stack"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["stacks"] })
+  });
 
   return (
     <div className="max-w-full">
@@ -52,9 +60,8 @@ export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data
                   <Link to={`/stack/${item.id}`}>Update</Link>
                 </Button>
                 <Button className="m-1" onClick={() => {
-                  handleDelete(item.id, 'stack');
+                  deleteMutation.mutate(item.id);
                   console.log('Delete Button Clicked!');
-                  window.location.reload();
                 }}>
                   Delete
                 </Button>

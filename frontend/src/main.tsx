@@ -11,6 +11,13 @@ import { Stacks } from './components/Stacks/index.tsx';
 import { Projects } from './components/Projects/index.tsx';
 import { StackForm } from './components/forms/StackForm.tsx';
 import { ProjectForm } from './components/forms/ProjectForm.tsx';
+import {
+  QueryClientProvider, 
+  QueryClient,
+} from '@tanstack/react-query'
+
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   //MAIN PAGE
@@ -59,7 +66,9 @@ const Root = () => {
 
   return (
   <StrictMode>
-    {loading ? <Loader /> :<RouterProvider router={router} />}
+    <QueryClientProvider client={queryClient}>
+      {loading ? <Loader /> :<RouterProvider router={router} />}
+    </QueryClientProvider>
   </StrictMode>
   )
 
