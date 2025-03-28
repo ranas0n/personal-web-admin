@@ -45,21 +45,25 @@ export const createProject = async (req: Request, res: Response) => {
   console.log(project, stacks);
 
   try {
+    let newProjectStack;
     const newProject = await prisma.$transaction(async (prisma) => {
       const projectData = await prisma.projects.create({ data: project });
 
       const projectStack = stacks.map((stack: { id: number }) => ({
         projectId: projectData.proj_id,
-        stackId: +stack.id,
+        stackId: Number(stack.id),
       }));
 
-      const newProjectStack = await prisma.projectStack.createMany({
+      newProjectStack = await prisma.projectStack.createMany({
         data: projectStack,
       });
 
-      return projectData;
+      return { projectData, newProjectStack };
     });
-    res.status(200).send({ newProject });
+    res.status(200).send({
+      projectData: newProject.projectData,
+      projectStack: newProject.newProjectStack,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -97,7 +101,10 @@ export const updateProject = async (req: Request, res: Response) => {
 ///////////////////////        DELETE METHODS           /////////////////////////////////////////////
 export const deleteProject = async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) return res.send(500).send(result.array);
+  if (!result.isEmpty()) {
+    console.error("Validation error: ", result.array());
+    return res.status(500).send(result.array);
+  }
   const { proj_id } = req.params;
   try {
     const deletedProject = await prisma.projects.delete({
@@ -113,3 +120,15 @@ export const deleteProject = async (req: Request, res: Response) => {
     });
   }
 };
+
+// const addProjectStacks = async (stackId: number, proj_id: number) => {
+//   try {
+//     const addedProjecStacks = prisma.projectStack.create({
+//       data: {
+
+//       }
+//     })
+//   } catch (error) {
+
+//   }
+// }
