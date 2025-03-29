@@ -28,6 +28,10 @@ export const ProjectForm : React.FC<ProjectFormProp> = ({method}) => {
   
 
   const isUpdate = method === "update";
+
+  useEffect(() => {
+    console.log(selectedStacks)
+  }, [selectedStacks])
   
   useEffect(() => {
     const loadProjects = async () => {

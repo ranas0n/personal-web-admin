@@ -69,19 +69,19 @@ export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data
   });
 
   return (
-    <div className="max-w-full">
+    <div className="max-w-full border-stroke dark:border-strokedark">
       <Button className="mb-2">
         <Link to={`/stack/`}>Add {table_name}</Link>
       </Button>
       
-      <table className="w-full border-collapse border border-gray-300">
+      <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <caption className="text-lg font-semibold my-2">A list of your {table_name} data.</caption>
         
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="border border-gray-300 p-2">
+                <th key={header.id} className="border border-stroke dark:border-strokedark p-2">
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
@@ -91,9 +91,9 @@ export const StackDataTable: React.FC<StackDataTableProps> = ({ table_name, data
 
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border border-gray-300">
+            <tr key={row.id} className="border border-stroke dark:border-strokedark">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border border-gray-300 p-2">
+                <td key={cell.id} className="border border-stroke dark:border-strokedark p-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
