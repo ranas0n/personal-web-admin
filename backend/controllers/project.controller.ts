@@ -80,20 +80,43 @@ export const updateProject = async (req: Request, res: Response) => {
     console.log("Validation Errors:", result.array());
     return res.status(400).json({ errors: result.array() });
   }
+
   const { proj_id } = req.params;
-  const project = req.body;
+  const project = req.body.project;
+  const stacks = req.body.stacks;
+
   try {
-    const newProject = await prisma.projects.update({
-      where: {
-        proj_id: Number(proj_id),
-      },
-      data: project,
+    const updatedProject = await prisma.$transaction(async (prisma) => {
+      const projectData = await prisma.projects.update({
+        where: { proj_id: Number(proj_id) },
+        data: project,
+      });
+
+      await prisma.projectStack.deleteMany({
+        where: { projectId: Number(proj_id) },
+      });
+
+      const projectStack = stacks.map((stack: { id: number }) => ({
+        projectId: Number(proj_id),
+        stackId: Number(stack.id),
+      }));
+
+      const newProjectStack = await prisma.projectStack.createMany({
+        data: projectStack,
+      });
+
+      return { projectData, newProjectStack };
     });
-    res.status(200).send(newProject);
+
+    res.status(200).json({
+      projectData: updatedProject.projectData,
+      projectStack: updatedProject.newProjectStack,
+    });
   } catch (error) {
-    res.status(500).send({
+    console.error("Update Error:", error);
+    res.status(500).json({
       error: "An error occurred while updating the project and its stacks",
-      message: error,
+      message: error instanceof Error ? error.message : error,
     });
   }
 };
