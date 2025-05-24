@@ -91,7 +91,4 @@ Before diving in, make sure you've got these installed:
 
 ## TODO
 
-- Fetch => React Query for caching
-- Use dynamic table
-- Add delete image on update page (add placeholder as well)
-- Get the project-stack i/o running
+- Add placeholder
