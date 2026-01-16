@@ -396,3 +396,119 @@ input[type="search"]::-webkit-search-cancel-button {
 .dataTables_wrapper table.dataTable tbody tr:nth-child(even) {
   @apply bg-slate-50 dark:bg-slate-800;
 }
+
+.dataTables_wrapper .dt-buttons .dt-button {
+  padding: 0.5rem 1rem !important;
+  border: 1px solid #cbd5e1 !important;
+  background: white !important;
+  color: #334155 !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  margin-right: 0.5rem !important;
+}
+
+.dataTables_wrapper .dt-buttons .dt-button:hover {
+  background: #eff6ff !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+
+.dataTables_wrapper .dt-buttons .dt-button:active {
+  background: #dbeafe !important;
+}
+
+/* Custom button styles */
+.btn-add {
+  background-color: #22c55e !important;
+  color: white !important;
+  border: 1px solid #22c55e !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.btn-add:hover {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+.dark .btn-add {
+  background-color: #22c55e !important;
+}
+
+.dark .btn-add:hover {
+  background-color: #16a34a !important;
+}
+
+.btn-edit {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border: 1px solid #3b82f6 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.btn-edit:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.dark .btn-edit {
+  background-color: #3b82f6 !important;
+}
+
+.dark .btn-edit:hover {
+  background-color: #2563eb !important;
+}
+
+.btn-delete {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border: 1px solid #ef4444 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.dark .btn-delete {
+  background-color: #ef4444 !important;
+}
+
+.dark .btn-delete:hover {
+  background-color: #dc2626 !important;
+}
+
+/* Position search and buttons on the same row */
+.dataTables_wrapper .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
