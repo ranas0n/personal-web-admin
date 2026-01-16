@@ -1,6 +1,5 @@
-// import { useState } from 'react'
 import { useEffect, useState } from 'react';
-import CardDataStats from './components/CardDataStats'
+import CardDataStats from './components/CardDataStats';
 import DefaultLayout from './components/Layouts/DefaultLayout';
 import Loader from './components/common/Loader';
 import { RiStackOverflowFill } from 'react-icons/ri';
@@ -13,21 +12,27 @@ function App() {
   const [projectRowNum, setProjectRowNum] = useState<number>(0);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-
     const fetchRowCount = async () => {
-      const stackRowRes = await getRowCount('stacks')
-      const projectRowRes = await getRowCount('projects')
-      setStackRowNum(stackRowRes.data);
-      setProjectRowNum(projectRowRes.data);
-    }
+      try {
+        const [stackRowRes, projectRowRes] = await Promise.all([
+          getRowCount('stacks'),
+          getRowCount('projects')
+        ]);
+        setStackRowNum(stackRowRes.data);
+        setProjectRowNum(projectRowRes.data);
+      } catch (error) {
+        console.error('Error fetching row counts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchRowCount();
   }, []);
 
-
-  return (loading ? <Loader /> : 
-    <>
+  return loading ? (
+    <Loader />
+  ) : (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="Total Number of Stacks" total={stackRowNum}>
@@ -38,8 +43,7 @@ function App() {
         </CardDataStats>
       </div>
     </DefaultLayout>
-    </>
   );
 }
 
-export default App
+export default App;

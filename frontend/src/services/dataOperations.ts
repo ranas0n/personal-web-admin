@@ -1,71 +1,62 @@
-// import { useNavigate } from "react-router-dom";
-
 const API_URL = `http://localhost:3000/api`;
 
 export const getRowCount = async (table: string) => {
   const url = `${API_URL}/row-count/${table}`;
   try {
-    console.log("Fetching from url : ", url);
     const res = await fetch(url);
 
     if (!res.ok) {
-      throw new Error(`Failed at fetching from ${url}. Status ${res.status}`);
+      throw new Error(`Failed to fetch from ${url}. Status: ${res.status}`);
     }
 
     const rowNum = await res.json();
     return rowNum;
   } catch (error) {
-    console.error(`Error fetching from ${url}`, error);
-    return 0;
+    console.error(`Error fetching row count from ${url}:`, error);
+    throw error;
   }
 };
 
 export const fetchAllData = async (url_path: string) => {
   try {
     const url = `${API_URL}/${url_path}`;
-    console.log("Fetching from:", url);
-
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(
-        `Failed at fetching ${url_path} data. Status: ${res.status}`
+        `Failed to fetch ${url_path} data. Status: ${res.status}`
       );
     }
 
     const data = await res.json();
-    console.log("Fetched data:", data);
     return data;
   } catch (error) {
-    console.error("Error in fetchAllData:", error);
+    console.error(`Error in fetchAllData for ${url_path}:`, error);
     throw error;
   }
 };
 
 export const fetchSingleRecord = async (id: number, url_path: string) => {
-  if (!id) console.log("You have to provide id");
-  if (url_path !== "project" && url_path !== "stack")
-    console.log("You can only get data from stack or project url");
-  if (url_path === "projects" || url_path === "stacks")
-    console.log(
-      "Url stacks and project are for getting all the data, not the specific record"
-    );
+  if (!id) {
+    throw new Error("ID must be provided");
+  }
+  if (url_path !== "project" && url_path !== "stack") {
+    throw new Error("You can only get data from stack or project URL");
+  }
 
   try {
     const url = `${API_URL}/${url_path}/${id}`;
-    console.log(`Fetching from : ${url}`);
     const res = await fetch(url);
 
-    if (!res.ok)
+    if (!res.ok) {
       throw new Error(
-        `Failed at fetching ${url_path} data. Status: ${res.status}`
+        `Failed to fetch ${url_path} data. Status: ${res.status}`
       );
+    }
 
     const data = await res.json();
-    console.log(`Fetched data : ${data}`);
-
     return data;
   } catch (error) {
-    console.error("Error in fetchAllData:", error);
+    console.error(`Error in fetchSingleRecord for ${url_path}/${id}:`, error);
     throw error;
   }
 };
@@ -81,13 +72,12 @@ export const handleDelete = async (
     const response = await fetch(url, {
       method: "DELETE",
     });
-    if (response.ok) {
-      console.log("DELETED SUCCESFULLY");
-    } else {
-      console.log("Failed to Delete the Record");
+    if (!response.ok) {
+      throw new Error(`Failed to delete record. Status: ${response.status}`);
     }
   } catch (error) {
-    console.error(error);
+    console.error(`Error deleting ${url_path}/${id}:`, error);
+    throw error;
   }
 };
 
@@ -96,10 +86,11 @@ export const deleteBlobImage = async (
   table: string,
   recordId: string | undefined
 ) => {
-  if (!blobURL || !table || !recordId) return;
+  if (!blobURL || !table || !recordId) {
+    throw new Error("Blob URL, table, and record ID are required");
+  }
 
   const encodedURL = encodeURIComponent(blobURL);
-
   const url = `${API_URL}/blob/${encodedURL}-${table}-${recordId}`;
 
   try {
@@ -107,14 +98,11 @@ export const deleteBlobImage = async (
       method: "PATCH",
     });
 
-    console.log(response);
-
-    if (response.ok) {
-      console.log("IMAGE DELETED SUCCESFULLY.");
-    } else {
-      console.log("Failed to delete image");
+    if (!response.ok) {
+      throw new Error(`Failed to delete image. Status: ${response.status}`);
     }
   } catch (error) {
-    console.log(error);
+    console.error(`Error deleting blob image:`, error);
+    throw error;
   }
 };

@@ -1,18 +1,14 @@
 import { Request, Response } from "express";
 import prisma from "../database/prismaClient";
 import { validationResult } from "express-validator";
+import { handleValidationErrors, handleError } from "../utils/errorHandler";
 
-///////////////////////        GET METHODS           /////////////////////////////////////////////
 export const getStacks = async (req: Request, res: Response) => {
   try {
     const stacks = await prisma.stack.findMany();
     res.json(stacks);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      error: "An error occured when fetching stack data.",
-      message: error,
-    });
+    handleError(res, "An error occurred when fetching stack data.", error);
   }
 };
 
@@ -26,22 +22,20 @@ export const getStackById = async (req: Request, res: Response) => {
     });
     res.json(stack);
   } catch (error) {
-    res.status(500).json({
-      error: "An error occured when trying to fetch said stack data.",
-      message: error,
-    });
+    handleError(
+      res,
+      "An error occurred when trying to fetch said stack data.",
+      error
+    );
   }
 };
 
-///////////////////////        POST METHODS           /////////////////////////////////////////////
 export const createStack = async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) {
-    console.log("Validation Errors:", result.array());
-    return res.status(400).json({ errors: result.array() });
-  }
+  const validationError = handleValidationErrors(result, res);
+  if (validationError) return;
+
   const { name, logo, href, category } = req.body;
-  console.log(name, logo, href, category);
   try {
     const newStack = await prisma.stack.create({
       data: {
@@ -53,20 +47,15 @@ export const createStack = async (req: Request, res: Response) => {
     });
     res.status(201).json(newStack);
   } catch (error) {
-    res.status(500).send({
-      error: "An error occured when creating a new stack",
-      message: error,
-    });
+    handleError(res, "An error occurred when creating a new stack", error);
   }
 };
 
-///////////////////////        PATCH METHODS           /////////////////////////////////////////////
 export const updateStack = async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) {
-    console.log("Validation Errors:", result.array());
-    return res.status(400).json({ errors: result.array() });
-  }
+  const validationError = handleValidationErrors(result, res);
+  if (validationError) return;
+
   const { id } = req.params;
   const stack = req.body;
   try {
@@ -76,19 +65,17 @@ export const updateStack = async (req: Request, res: Response) => {
       },
       data: stack,
     });
-    res.status(200).send(newStack);
+    res.status(200).json(newStack);
   } catch (error) {
-    res.status(500).send({
-      error: "An error occured when updating the stack",
-      message: error,
-    });
+    handleError(res, "An error occurred when updating the stack", error);
   }
 };
 
-///////////////////////        DELETE METHODS           /////////////////////////////////////////////
 export const deleteStack = async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) return res.send(500).send(result.array);
+  const validationError = handleValidationErrors(result, res);
+  if (validationError) return;
+
   const { id } = req.params;
   try {
     const deleteStack = await prisma.stack.delete({
@@ -96,11 +83,8 @@ export const deleteStack = async (req: Request, res: Response) => {
         id: Number(id),
       },
     });
-    res.status(200).send(deleteStack);
+    res.status(200).json(deleteStack);
   } catch (error) {
-    res.status(500).send({
-      error: "An error occured when deleting said stack",
-      message: error,
-    });
+    handleError(res, "An error occurred when deleting said stack", error);
   }
 };
